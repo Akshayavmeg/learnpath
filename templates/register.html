@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Create Account – LearnPath</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:    #0f0e0c;
+    --cream:  #f5f0e8;
+    --gold:   #c8973a;
+    --gold-light: #e8c97a;
+    --rust:   #c05a2a;
+    --sage:   #4a6741;
+    --card:   #faf7f2;
+    --border: #d6cfc2;
+    --muted:  #6b6456;
+    --label:  #7a7063;
+  }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem 4rem;
+  }
+
+  /* Same radial gradient background as index.html */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(200,151,58,.12) 0%, transparent 55%),
+      radial-gradient(circle at 85% 80%, rgba(192,90,42,.10) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  .container {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 460px;
+  }
+
+  /* ── Logo ── */
+  .logo {
+    display: inline-flex; align-items: center; gap: .55rem;
+    font-family: 'Fraunces', serif; font-size: 1.05rem; letter-spacing: .08em;
+    color: var(--gold); text-transform: uppercase;
+    text-decoration: none;
+  }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
+
+  /* ── Page header ── */
+  .page-header {
+    text-align: center;
+    margin-bottom: 2.4rem;
+  }
+  .page-header .logo-wrap { margin-bottom: 1.6rem; }
+  .page-header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.9rem, 5vw, 2.6rem);
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: .55rem;
+  }
+  .page-header h1 em { color: var(--rust); font-style: italic; }
+  .page-header .subtitle {
+    font-size: .92rem; color: var(--muted); line-height: 1.6;
+  }
+
+  /* ── Card — identical to index.html ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 8px 40px rgba(15,14,12,.07);
+  }
+
+  /* ── Section label — same as index.html ── */
+  .section-label {
+    font-family: 'Fraunces', serif; font-size: .9rem; font-style: italic;
+    color: var(--gold); margin-bottom: 1.2rem;
+  }
+
+  /* ── Divider ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+  /* ── Flash messages ── */
+  .flashes { margin-bottom: 1.2rem; }
+  .flash {
+    padding: .7rem 1rem; border-radius: 10px;
+    margin-bottom: .5rem; font-size: .85rem;
+  }
+  .flash.success { background: rgba(74,103,65,.1);  border: 1px solid rgba(74,103,65,.3);  color: #3a5e32; }
+  .flash.error   { background: rgba(192,90,42,.1);  border: 1px solid rgba(192,90,42,.3);  color: var(--rust); }
+  .flash.info    { background: rgba(200,151,58,.1); border: 1px solid rgba(200,151,58,.3); color: #8a6420; }
+
+  /* ── Form fields — identical to index.html ── */
+  .field { margin-bottom: 1.4rem; }
+  label {
+    display: block; font-size: .8rem; font-weight: 500;
+    letter-spacing: .06em; text-transform: uppercase;
+    color: var(--label); margin-bottom: .45rem;
+  }
+  .label-hint {
+    float: right; font-size: .73rem; letter-spacing: 0;
+    text-transform: none; color: #a8a09a; font-weight: 400;
+  }
+  input {
+    width: 100%; padding: .75rem 1rem;
+    background: #fff; border: 1.5px solid var(--border);
+    border-radius: 10px; font-family: 'DM Sans', sans-serif;
+    font-size: .97rem; color: var(--ink);
+    transition: border-color .2s, box-shadow .2s;
+    outline: none;
+  }
+  input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(200,151,58,.15);
+  }
+  input.error-field {
+    border-color: rgba(192,90,42,.6);
+    box-shadow: 0 0 0 3px rgba(192,90,42,.1);
+  }
+  input::placeholder { color: #b8b0a6; }
+
+  /* ── Password wrapper with toggle ── */
+  .input-wrap { position: relative; }
+  .input-wrap input { padding-right: 3rem; }
+  .toggle-pw {
+    position: absolute; right: .9rem; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--label); padding: .2rem;
+    font-size: .85rem; line-height: 1;
+    transition: color .2s;
+  }
+  .toggle-pw:hover { color: var(--gold); }
+
+  /* ── Password strength meter ── */
+  .strength-wrap { margin-top: .55rem; }
+  .strength-bars {
+    display: flex; gap: 3px; height: 3px; margin-bottom: .35rem;
+  }
+  .strength-bar {
+    flex: 1; border-radius: 2px;
+    background: var(--border);
+    transition: background .3s;
+  }
+  .strength-bar.weak   { background: var(--rust); }
+  .strength-bar.fair   { background: var(--gold); }
+  .strength-bar.strong { background: var(--sage); }
+  .strength-text {
+    font-size: .73rem; color: var(--label); height: 1em;
+    transition: color .3s;
+  }
+  .strength-text.weak   { color: var(--rust); }
+  .strength-text.fair   { color: #8a6420; }
+  .strength-text.strong { color: var(--sage); }
+
+  /* ── Submit button — identical to index.html ── */
+  button[type="submit"] {
+    width: 100%; padding: 1rem;
+    background: var(--ink); color: var(--cream);
+    border: none; border-radius: 12px;
+    font-family: 'Fraunces', serif; font-size: 1.1rem;
+    font-weight: 700; letter-spacing: .02em;
+    cursor: pointer; margin-top: .3rem;
+    transition: background .2s, transform .15s;
+    position: relative; overflow: hidden;
+  }
+  button[type="submit"]:hover { background: #2a2520; transform: translateY(-1px); }
+  button[type="submit"]:active { transform: translateY(0); }
+  button[type="submit"]::after { content: ' →'; transition: letter-spacing .2s; }
+  button[type="submit"]:hover::after { letter-spacing: .1em; }
+
+  /* ── Terms note ── */
+  .terms-note {
+    font-size: .78rem; color: #a8a09a; text-align: center;
+    line-height: 1.5; margin-top: 1rem;
+  }
+
+  /* ── Divider + footer link ── */
+  .link-divider {
+    display: flex; align-items: center; gap: .85rem;
+    margin: 1.6rem 0 1.4rem;
+  }
+  .link-divider-line { flex: 1; height: 1px; background: var(--border); }
+  .link-divider-text { font-size: .78rem; color: var(--label); white-space: nowrap; }
+
+  .card-footer {
+    text-align: center;
+    font-size: .87rem; color: var(--muted);
+  }
+  .card-footer a {
+    color: var(--rust); text-decoration: none; font-weight: 500;
+    transition: opacity .2s;
+  }
+  .card-footer a:hover { opacity: .75; }
+
+  /* ── Perks strip ── */
+  .perks {
+    display: flex; justify-content: center; flex-wrap: wrap;
+    gap: .55rem; margin-bottom: 2rem;
+  }
+  .perk {
+    display: inline-flex; align-items: center; gap: .4rem;
+    font-size: .78rem; color: var(--muted);
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: .3rem .85rem;
+  }
+
+  /* ── Page footer ── */
+  footer {
+    text-align: center; margin-top: 2rem;
+    font-size: .8rem; color: #9e958a;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .container { animation: fadeUp .5s ease both; }
+  .card      { animation: fadeUp .5s .08s ease both; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="logo-wrap">
+      <a href="/" class="logo"><span class="logo-dot"></span>LearnPath<span class="logo-dot"></span></a>
+    </div>
+    <h1>Start your <em>journey.</em></h1>
+    <p class="subtitle">Create a free account to get your personalised learning plan.</p>
+  </div>
+
+  <!-- Feature perks -->
+  <div class="perks">
+    <span class="perk">✦ AI course matching</span>
+    <span class="perk">✦ 7-day timetable</span>
+    <span class="perk">✦ Progress tracking</span>
+  </div>
+
+  <!-- Card -->
+  <div class="card">
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flashes">
+      {% for cat, msg in messages %}
+      <div class="flash {{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="section-label">Create your account</div>
+
+    <form method="POST" action="/register" novalidate id="reg-form">
+
+      <!-- Username -->
+      <div class="field">
+        <label for="username">
+          Username
+          <span class="label-hint">letters, numbers, underscores</span>
+        </label>
+        <input
+          type="text" id="username" name="username"
+          placeholder="Choose a username"
+          autocomplete="username"
+          minlength="3" maxlength="32"
+          required
+          value="{{ request.form.get('username', '') }}"
+        />
+      </div>
+
+      <hr class="divider" />
+
+      <!-- Password -->
+      <div class="field">
+        <label for="password">
+          Password
+          <span class="label-hint">min. 6 characters</span>
+        </label>
+        <div class="input-wrap">
+          <input
+            type="password" id="password" name="password"
+            placeholder="Choose a strong password"
+            autocomplete="new-password"
+            minlength="6"
+            required
+            oninput="checkStrength(this.value)"
+          />
+          <button type="button" class="toggle-pw" onclick="togglePassword('password', this)" aria-label="Show password">
+            👁
+          </button>
+        </div>
+        <!-- Strength meter -->
+        <div class="strength-wrap" id="strength-wrap" style="display:none;">
+          <div class="strength-bars">
+            <div class="strength-bar" id="sb1"></div>
+            <div class="strength-bar" id="sb2"></div>
+            <div class="strength-bar" id="sb3"></div>
+            <div class="strength-bar" id="sb4"></div>
+          </div>
+          <div class="strength-text" id="strength-text"></div>
+        </div>
+      </div>
+
+      <!-- Confirm password -->
+      <div class="field">
+        <label for="confirm">Confirm password</label>
+        <div class="input-wrap">
+          <input
+            type="password" id="confirm" name="confirm"
+            placeholder="Repeat your password"
+            autocomplete="new-password"
+            minlength="6"
+            required
+            oninput="checkMatch()"
+          />
+          <button type="button" class="toggle-pw" onclick="togglePassword('confirm', this)" aria-label="Show password">
+            👁
+          </button>
+        </div>
+        <div id="match-msg" style="font-size:.75rem;margin-top:.35rem;min-height:1em;"></div>
+      </div>
+
+      <button type="submit" id="submit-btn">Create Account</button>
+
+      <p class="terms-note">
+        By creating an account you agree to use LearnPath for educational purposes.
+        No email required — your data stays on this server.
+      </p>
+
+    </form>
+
+    <div class="link-divider">
+      <div class="link-divider-line"></div>
+      <span class="link-divider-text">already have an account?</span>
+      <div class="link-divider-line"></div>
+    </div>
+
+    <div class="card-footer">
+      <a href="/login">← Sign in to your account</a>
+    </div>
+
+  </div>
+
+  <footer>Free · Secure · Powered by LearnPath AI</footer>
+</div>
+
+<script>
+  /* ── Toggle password visibility ── */
+  function togglePassword(fieldId, btn) {
+    var input = document.getElementById(fieldId);
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.textContent = '🙈';
+      btn.setAttribute('aria-label', 'Hide password');
+    } else {
+      input.type = 'password';
+      btn.textContent = '👁';
+      btn.setAttribute('aria-label', 'Show password');
+    }
+  }
+
+  /* ── Password strength meter ── */
+  function checkStrength(val) {
+    var wrap = document.getElementById('strength-wrap');
+    if (!val) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+
+    var score = 0;
+    if (val.length >= 6)  score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+    if (/[0-9]/.test(val) || /[^A-Za-z0-9]/.test(val)) score++;
+
+    var bars  = ['sb1','sb2','sb3','sb4'];
+    var label = document.getElementById('strength-text');
+    var cls   = score <= 1 ? 'weak' : score <= 2 ? 'fair' : 'strong';
+    var text  = score <= 1 ? 'Weak password' : score <= 2 ? 'Fair — try adding numbers or capitals' : score <= 3 ? 'Good password' : 'Strong password ✓';
+
+    bars.forEach(function(id, i) {
+      var el = document.getElementById(id);
+      el.className = 'strength-bar';
+      if (i < score) el.classList.add(cls);
+    });
+    label.className = 'strength-text ' + cls;
+    label.textContent = text;
+  }
+
+  /* ── Confirm password match ── */
+  function checkMatch() {
+    var pw  = document.getElementById('password').value;
+    var cfm = document.getElementById('confirm').value;
+    var msg = document.getElementById('match-msg');
+    var btn = document.getElementById('submit-btn');
+    if (!cfm) { msg.textContent = ''; return; }
+    if (pw === cfm) {
+      msg.style.color = '#4a6741';
+      msg.textContent = '✓ Passwords match';
+      document.getElementById('confirm').classList.remove('error-field');
+    } else {
+      msg.style.color = '#c05a2a';
+      msg.textContent = '✗ Passwords do not match';
+      document.getElementById('confirm').classList.add('error-field');
+    }
+  }
+
+  /* ── Prevent submit if passwords don't match ── */
+  document.getElementById('reg-form').addEventListener('submit', function(e) {
+    var pw  = document.getElementById('password').value;
+    var cfm = document.getElementById('confirm').value;
+    if (pw !== cfm) {
+      e.preventDefault();
+      checkMatch();
+      document.getElementById('confirm').focus();
+    }
+  });
+</script>
+
+</body>
+</html>

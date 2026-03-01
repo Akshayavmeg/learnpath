@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Dashboard – LearnPath</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400;1,9..144,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ══ Exact same tokens as index.html ══ */
+  :root {
+    --ink:        #0f0e0c;
+    --cream:      #f5f0e8;
+    --cream-dark: #ede8df;
+    --gold:       #c8973a;
+    --gold-light: #e8c97a;
+    --gold-pale:  #f7efe0;
+    --rust:       #c05a2a;
+    --sage:       #4a6741;
+    --card:       #faf7f2;
+    --border:     #d6cfc2;
+    --border-soft:#e4ddd3;
+    --muted:      #7a7063;
+    --faint:      #9e958a;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Radial gradient texture – identical to index.html */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      radial-gradient(ellipse 70% 55% at 8%  12%,  rgba(200,151,58,.11) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 45% at 92% 85%,  rgba(192,90,42,.09)  0%, transparent 60%),
+      radial-gradient(ellipse 40% 35% at 55% 50%,  rgba(200,151,58,.04) 0%, transparent 60%);
+  }
+
+  .page { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* ════════════════════════════════════════
+     TOP NAV  (identical to index.html)
+  ════════════════════════════════════════ */
+  .top-nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 clamp(1.5rem, 5vw, 3.5rem);
+    height: 62px;
+    background: rgba(245,240,232,.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .nav-logo {
+    display: inline-flex; align-items: center; gap: .55rem;
+    font-family: 'Fraunces', serif; font-size: 1rem; letter-spacing: .08em;
+    color: var(--gold); text-transform: uppercase; text-decoration: none;
+  }
+  .nav-logo-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
+  .nav-right { display: flex; align-items: center; gap: .5rem; }
+  .nav-badge {
+    font-size: .72rem; font-weight: 500; letter-spacing: .09em;
+    text-transform: uppercase; color: var(--rust);
+    background: rgba(192,90,42,.08); border: 1px solid rgba(192,90,42,.2);
+    border-radius: 20px; padding: .3rem .8rem; white-space: nowrap;
+  }
+  .nav-links { display: flex; align-items: center; gap: .5rem; }
+  .nav-links a {
+    font-size: .82rem; color: var(--muted); text-decoration: none;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: .32rem .85rem;
+    transition: border-color .2s, color .2s; white-space: nowrap;
+  }
+  .nav-links a:hover { border-color: var(--rust); color: var(--rust); }
+  .nav-username {
+    font-size: .82rem; color: var(--muted);
+    background: var(--gold-pale); border: 1px solid var(--border);
+    border-radius: 20px; padding: .32rem .85rem;
+  }
+
+  /* ════════════════════════════════════════
+     PAGE HEADER BAND
+  ════════════════════════════════════════ */
+  .page-header {
+    border-bottom: 1px solid var(--border-soft);
+    padding: clamp(2.2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3.5rem) clamp(1.8rem, 4vw, 3rem);
+  }
+  .page-header-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    flex-wrap: wrap; gap: 1.2rem;
+  }
+  .page-header-kicker {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-size: .72rem; font-weight: 500; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--rust);
+    border: 1px solid rgba(192,90,42,.3); border-radius: 20px;
+    padding: .28rem .85rem; margin-bottom: .9rem;
+    background: rgba(192,90,42,.07);
+  }
+  .page-header-kicker-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--rust); }
+  .page-header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.9rem, 4vw, 2.9rem);
+    line-height: 1.1; letter-spacing: -.02em;
+    color: var(--ink); margin-bottom: .4rem;
+    max-width: none; /* override global h1 centering */
+    text-align: left;
+  }
+  .page-header h1 em { color: var(--rust); font-style: italic; }
+  .page-header-sub { font-size: .92rem; color: var(--muted); line-height: 1.5; }
+  .page-header-actions { display: flex; align-items: center; gap: .6rem; flex-shrink: 0; }
+  .btn-outline {
+    font-size: .82rem; font-weight: 500; color: var(--muted);
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: .42rem 1rem;
+    text-decoration: none; cursor: pointer;
+    transition: border-color .2s, color .2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-outline:hover { border-color: var(--rust); color: var(--rust); }
+
+  /* ════════════════════════════════════════
+     MAIN CONTENT WRAPPER
+  ════════════════════════════════════════ */
+  .main {
+    flex: 1;
+    width: 100%; max-width: 1200px;
+    margin: 0 auto;
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.5rem, 5vw, 3.5rem) clamp(3rem, 6vw, 5rem);
+    display: flex; flex-direction: column; gap: 2.5rem;
+  }
+
+  /* ════════════════════════════════════════
+     STAT CARDS ROW
+  ════════════════════════════════════════ */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.1rem;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.8rem 1.8rem 1.6rem;
+    box-shadow: 0 4px 20px rgba(15,14,12,.05);
+    position: relative; overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(15,14,12,.09);
+  }
+
+  /* Coloured top accent stripe */
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .stat-card.gold::before  { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+  .stat-card.rust::before  { background: linear-gradient(90deg, var(--rust), #e07848); }
+  .stat-card.sage::before  { background: linear-gradient(90deg, var(--sage), #6a9460); }
+
+  .stat-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; margin-bottom: 1.1rem;
+  }
+  .stat-card.gold  .stat-icon { background: rgba(200,151,58,.12); }
+  .stat-card.rust  .stat-icon { background: rgba(192,90,42,.1);  }
+  .stat-card.sage  .stat-icon { background: rgba(74,103,65,.1);   }
+
+  .stat-label {
+    font-size: .72rem; font-weight: 500; letter-spacing: .09em;
+    text-transform: uppercase; color: var(--faint);
+    margin-bottom: .45rem;
+  }
+  .stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    line-height: 1; color: var(--ink);
+    margin-bottom: .3rem;
+  }
+  .stat-card.rust  .stat-value { color: var(--rust); }
+  .stat-card.sage  .stat-value { color: var(--sage); }
+  .stat-sub { font-size: .78rem; color: var(--muted); line-height: 1.4; }
+
+  /* ════════════════════════════════════════
+     STUDENT TABLE CARD
+  ════════════════════════════════════════ */
+  .table-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: 0 8px 40px rgba(15,14,12,.06), 0 2px 8px rgba(15,14,12,.03);
+    overflow: hidden;
+  }
+
+  /* Table card header */
+  .table-header {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem;
+    padding: 1.6rem 2rem 1.4rem;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .table-header-left h2 {
+    font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700;
+    color: var(--ink); margin-bottom: .2rem;
+  }
+  .table-header-left p { font-size: .82rem; color: var(--muted); }
+  .table-count {
+    font-size: .72rem; font-weight: 500; letter-spacing: .09em;
+    text-transform: uppercase; color: var(--muted);
+    background: var(--cream-dark); border: 1px solid var(--border);
+    border-radius: 20px; padding: .3rem .85rem; white-space: nowrap;
+  }
+
+  /* Search bar */
+  .search-wrap {
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--border-soft);
+    display: flex; align-items: center; gap: .75rem;
+  }
+  .search-icon { color: var(--faint); flex-shrink: 0; font-size: 1rem; }
+  .search-input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-family: 'DM Sans', sans-serif; font-size: .9rem;
+    color: var(--ink);
+  }
+  .search-input::placeholder { color: #c0b8ae; }
+
+  /* Table scroll wrapper */
+  .table-scroll { overflow-x: auto; }
+
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: .875rem;
+  }
+
+  thead tr { border-bottom: 1.5px solid var(--border); }
+
+  th {
+    text-align: left;
+    font-size: .7rem; font-weight: 600;
+    letter-spacing: .09em; text-transform: uppercase;
+    color: var(--faint);
+    padding: .85rem 1.2rem .8rem;
+    white-space: nowrap;
+  }
+  th:first-child { padding-left: 2rem; }
+  th:last-child  { padding-right: 2rem; text-align: right; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border-soft);
+    transition: background .15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(200,151,58,.04); }
+
+  td {
+    padding: 1rem 1.2rem;
+    color: var(--ink); vertical-align: middle;
+    line-height: 1.4;
+  }
+  td:first-child { padding-left: 2rem; }
+  td:last-child  { padding-right: 2rem; text-align: right; }
+
+  /* Avatar + username cell */
+  .cell-user { display: flex; align-items: center; gap: .75rem; }
+  .user-avatar {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--gold-pale), var(--cream-dark));
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-size: .82rem; font-weight: 700;
+    color: var(--gold);
+  }
+  .cell-username { font-weight: 500; color: var(--ink); }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    font-size: .7rem; font-weight: 500;
+    letter-spacing: .04em;
+    border-radius: 20px; padding: .22rem .65rem;
+    white-space: nowrap;
+  }
+  .badge-gold   { background: rgba(200,151,58,.12); color: #7a5a1a; border: 1px solid rgba(200,151,58,.25); }
+  .badge-rust   { background: rgba(192,90,42,.10);  color: var(--rust); border: 1px solid rgba(192,90,42,.22); }
+  .badge-sage   { background: rgba(74,103,65,.10);  color: var(--sage); border: 1px solid rgba(74,103,65,.22); }
+  .badge-ink    { background: rgba(15,14,12,.07);   color: var(--ink);  border: 1px solid rgba(15,14,12,.12); }
+
+  /* Action link */
+  .action-link {
+    font-size: .78rem; font-weight: 500; color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--border); border-radius: 20px;
+    padding: .28rem .75rem; background: var(--card);
+    transition: border-color .2s, color .2s;
+    display: inline-block;
+  }
+  .action-link:hover { border-color: var(--rust); color: var(--rust); }
+
+  /* Empty state */
+  .empty-state {
+    padding: 3.5rem 2rem; text-align: center;
+  }
+  .empty-state-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .empty-state h3 {
+    font-family: 'Fraunces', serif; font-size: 1.1rem;
+    color: var(--ink); margin-bottom: .4rem;
+  }
+  .empty-state p { font-size: .87rem; color: var(--muted); }
+
+  /* ════════════════════════════════════════
+     FLASH MESSAGES
+  ════════════════════════════════════════ */
+  .flashes { margin-bottom: -.5rem; }
+  .flash {
+    display: flex; align-items: flex-start; gap: .6rem;
+    padding: .78rem 1.1rem; border-radius: 12px;
+    margin-bottom: .5rem; font-size: .86rem; line-height: 1.5;
+  }
+  .flash.success { background: rgba(74,103,65,.09); border: 1px solid rgba(74,103,65,.28); color: #3a5e32; }
+  .flash.error   { background: rgba(192,90,42,.09); border: 1px solid rgba(192,90,42,.28); color: var(--rust); }
+  .flash.info    { background: rgba(200,151,58,.09); border: 1px solid rgba(200,151,58,.28); color: #8a6420; }
+
+  /* ════════════════════════════════════════
+     PAGE FOOTER
+  ════════════════════════════════════════ */
+  .page-footer {
+    border-top: 1px solid var(--border-soft);
+    padding: 1.4rem clamp(1.5rem, 5vw, 3.5rem);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: .75rem;
+    font-size: .78rem; color: var(--faint);
+  }
+  .page-footer a { color: var(--muted); text-decoration: none; }
+  .page-footer a:hover { color: var(--rust); }
+  .footer-links { display: flex; gap: 1.2rem; }
+
+  /* ════════════════════════════════════════
+     ANIMATIONS
+  ════════════════════════════════════════ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .page-header   { animation: fadeUp .45s ease both; }
+  .stats-grid    { animation: fadeUp .45s .08s ease both; }
+  .table-card    { animation: fadeUp .45s .16s ease both; }
+
+  /* ════════════════════════════════════════
+     RESPONSIVE
+  ════════════════════════════════════════ */
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(3, 1fr); gap: .8rem; }
+  }
+
+  @media (max-width: 680px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .stat-card.sage { grid-column: 1 / -1; }
+    .table-header { padding: 1.2rem 1.3rem 1rem; }
+    .search-wrap  { padding: .85rem 1.3rem; }
+    th:first-child, td:first-child { padding-left: 1.3rem; }
+    th:last-child,  td:last-child  { padding-right: 1.3rem; }
+    th, td { padding: .75rem .9rem; }
+    .page-header h1 { font-size: 1.7rem; }
+    .page-header-actions { width: 100%; }
+  }
+
+  @media (max-width: 480px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .stat-card.sage { grid-column: auto; }
+    .main { gap: 1.8rem; padding-left: 1rem; padding-right: 1rem; }
+    .stat-value { font-size: 2.2rem; }
+    .page-header-inner { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══ NAV ═══════════════════════════════════════ -->
+  <nav class="top-nav">
+    <a href="/" class="nav-logo">
+      <span class="nav-logo-dot"></span>LearnPath<span class="nav-logo-dot"></span>
+    </a>
+    <div class="nav-right">
+      <span class="nav-badge">Admin</span>
+      <div class="nav-links">
+        <span class="nav-username">{{ session.get('username') }}</span>
+        <a href="/logout">Log out</a>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- ══ PAGE HEADER ════════════════════════════════ -->
+  <header class="page-header">
+    <div class="page-header-inner">
+      <div>
+        <div class="page-header-kicker">
+          <span class="page-header-kicker-dot"></span>
+          Administrator
+        </div>
+        <h1>Admin <em>Dashboard</em></h1>
+        <p class="page-header-sub">
+          Overview of all registered students, activity logs, and platform performance.
+        </p>
+      </div>
+      <div class="page-header-actions">
+        <a href="/" class="btn-outline">← Back to home</a>
+        <a href="/logout" class="btn-outline">Log out</a>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ══ MAIN ══════════════════════════════════════ -->
+  <main class="main">
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flashes">
+      {% for cat, msg in messages %}
+      <div class="flash {{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+
+    <!-- ── Stat cards ── -->
+    <div class="stats-grid">
+
+      <div class="stat-card gold">
+        <div class="stat-icon">👥</div>
+        <div class="stat-label">Total Students</div>
+        <div class="stat-value">{{ total_students }}</div>
+        <div class="stat-sub">Registered learners</div>
+      </div>
+
+      <div class="stat-card rust">
+        <div class="stat-icon">📋</div>
+        <div class="stat-label">Total Logs</div>
+        <div class="stat-value">{{ total_logs }}</div>
+        <div class="stat-sub">Study sessions recorded</div>
+      </div>
+
+      <div class="stat-card sage">
+        <div class="stat-icon">📈</div>
+        <div class="stat-label">Average Score</div>
+        <div class="stat-value">{{ avg_score }}%</div>
+        <div class="stat-sub">Across all logged sessions</div>
+      </div>
+
+    </div>
+
+
+    <!-- ── Student table ── -->
+    <div class="table-card">
+
+      <div class="table-header">
+        <div class="table-header-left">
+          <h2>All Students</h2>
+          <p>Every registered learner and their current profile.</p>
+        </div>
+        <span class="table-count">{{ students | length }} total</span>
+      </div>
+
+      <!-- Search (client-side filter) -->
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          class="search-input"
+          type="text"
+          id="student-search"
+          placeholder="Search by username, name, subject or grade…"
+          oninput="filterTable(this.value)"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="table-scroll">
+        {% if students %}
+        <table id="student-table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Name</th>
+              <th>Grade</th>
+              <th>Weak Subject</th>
+              <th>Learning Style</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in students %}
+            <tr>
+
+              <!-- Username + avatar -->
+              <td>
+                <div class="cell-user">
+                  <div class="user-avatar">{{ s.username[0] | upper }}</div>
+                  <span class="cell-username">{{ s.username }}</span>
+                </div>
+              </td>
+
+              <!-- Name -->
+              <td>{{ s.name if s.name else '—' }}</td>
+
+              <!-- Grade badge -->
+              <td>
+                {% if s.grade %}
+                  <span class="badge badge-ink">{{ s.grade }}</span>
+                {% else %}
+                  <span style="color:var(--faint)">—</span>
+                {% endif %}
+              </td>
+
+              <!-- Subject badge -->
+              <td>
+                {% if s.weak_subject %}
+                  {% set sub = s.weak_subject | lower %}
+                  {% if 'math' in sub %}
+                    <span class="badge badge-gold">{{ s.weak_subject }}</span>
+                  {% elif 'science' in sub %}
+                    <span class="badge badge-sage">{{ s.weak_subject }}</span>
+                  {% elif 'english' in sub %}
+                    <span class="badge badge-rust">{{ s.weak_subject }}</span>
+                  {% else %}
+                    <span class="badge badge-ink">{{ s.weak_subject }}</span>
+                  {% endif %}
+                {% else %}
+                  <span style="color:var(--faint)">—</span>
+                {% endif %}
+              </td>
+
+              <!-- Learning style badge -->
+              <td>
+                {% if s.learning_style %}
+                  {% set ls = s.learning_style | lower %}
+                  {% if 'visual' in ls %}
+                    <span class="badge badge-gold">{{ s.learning_style }}</span>
+                  {% elif 'audit' in ls %}
+                    <span class="badge badge-rust">{{ s.learning_style }}</span>
+                  {% elif 'reading' in ls or 'writing' in ls %}
+                    <span class="badge badge-ink">{{ s.learning_style }}</span>
+                  {% else %}
+                    <span class="badge badge-sage">{{ s.learning_style }}</span>
+                  {% endif %}
+                {% else %}
+                  <span style="color:var(--faint)">—</span>
+                {% endif %}
+              </td>
+
+              <!-- Actions -->
+              <td>
+                <a href="/admin/student/{{ s.id }}" class="action-link">View →</a>
+              </td>
+
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <!-- No-results row (hidden by default, shown by JS) -->
+        <div id="no-results" style="display:none;">
+          <div class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <h3>No students found</h3>
+            <p>No records match your search. Try a different term.</p>
+          </div>
+        </div>
+
+        {% else %}
+        <!-- Genuine empty state -->
+        <div class="empty-state">
+          <div class="empty-state-icon">📚</div>
+          <h3>No students yet</h3>
+          <p>Students will appear here once they create their learning plans.</p>
+        </div>
+        {% endif %}
+      </div>
+
+    </div><!-- /table-card -->
+
+  </main>
+
+
+  <!-- ══ FOOTER ═════════════════════════════════════ -->
+  <footer class="page-footer">
+    <span>© 2025 LearnPath · Admin Panel</span>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/logout">Log out</a>
+    </div>
+  </footer>
+
+</div><!-- /page -->
+
+
+<script>
+  /* ── Live search filter ── */
+  function filterTable(query) {
+    var q     = query.trim().toLowerCase();
+    var rows  = document.querySelectorAll('#student-table tbody tr');
+    var found = 0;
+
+    rows.forEach(function (row) {
+      var text = row.textContent.toLowerCase();
+      var show = !q || text.includes(q);
+      row.style.display = show ? '' : 'none';
+      if (show) found++;
+    });
+
+    var noResults = document.getElementById('no-results');
+    var table     = document.getElementById('student-table');
+    if (noResults && table) {
+      if (found === 0 && q) {
+        noResults.style.display = 'block';
+        table.querySelector('tbody').style.display = 'none';
+      } else {
+        noResults.style.display = 'none';
+        table.querySelector('tbody').style.display = '';
+      }
+    }
+  }
+</script>
+
+</body>
+</html>

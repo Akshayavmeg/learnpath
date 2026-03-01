@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Your Learning Plan – LearnPath</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:    #0f0e0c;
+    --cream:  #f5f0e8;
+    --gold:   #c8973a;
+    --gold-light: #e8c97a;
+    --rust:   #c05a2a;
+    --sage:   #4a6741;
+    --card:   #faf7f2;
+    --border: #d6cfc2;
+    --muted:  #6b6456;
+    --label:  #7a7063;
+  }
+
+  /* ── Base ── */
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 5rem;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(200,151,58,.12) 0%, transparent 55%),
+      radial-gradient(circle at 85% 80%, rgba(192,90,42,.10) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  .container {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 780px;
+  }
+
+  /* ── Top nav (matches index.html exactly) ── */
+  .top-nav {
+    position: fixed; top: 1.2rem; right: 1.5rem; z-index: 10;
+    display: flex; align-items: center; gap: .6rem;
+  }
+  .top-nav-user {
+    font-size: .8rem; color: var(--label);
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: .35rem .85rem;
+  }
+  .top-nav a {
+    font-size: .8rem; color: var(--label); text-decoration: none;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: .35rem .85rem;
+    transition: border-color .2s, color .2s;
+  }
+  .top-nav a:hover { border-color: var(--rust); color: var(--rust); }
+
+  /* ── Logo ── */
+  .logo {
+    display: inline-flex; align-items: center; gap: .55rem;
+    font-family: 'Fraunces', serif; font-size: 1.05rem; letter-spacing: .08em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 1.5rem;
+    text-decoration: none;
+  }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
+
+  /* ── Page header ── */
+  .page-header {
+    text-align: center;
+    margin-bottom: 2.8rem;
+  }
+  .page-header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 5.5vw, 3rem);
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: .6rem;
+  }
+  .page-header h1 em { color: var(--rust); font-style: italic; }
+  .page-header .subtitle {
+    font-size: .95rem; color: var(--muted);
+    max-width: 440px; margin: 0 auto; line-height: 1.6;
+  }
+
+  /* ── Meta strip ── */
+  .meta-strip {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: .55rem; margin-top: 1.4rem;
+  }
+  .meta-tag {
+    font-size: .78rem; font-weight: 500;
+    color: var(--label); background: var(--card);
+    border: 1px solid var(--border); border-radius: 20px;
+    padding: .3rem .85rem;
+  }
+  .meta-tag strong { color: var(--ink); font-weight: 500; }
+
+  /* ── Card (identical to index.html) ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 8px 40px rgba(15,14,12,.07);
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── Section label (identical to index.html) ── */
+  .section-label {
+    font-family: 'Fraunces', serif; font-size: .9rem; font-style: italic;
+    color: var(--gold); margin-bottom: 1.2rem;
+  }
+
+  /* ── Divider (identical to index.html) ── */
+  .divider {
+    border: none; border-top: 1px solid var(--border);
+    margin: 1.8rem 0;
+  }
+
+  /* ── Course grid ── */
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  .course-item {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem 1.1rem;
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+  }
+  .course-item:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(200,151,58,.1);
+  }
+  .course-num {
+    font-size: .7rem; font-weight: 500; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: .5rem;
+  }
+  .course-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem; line-height: 1.3;
+    color: var(--ink); margin-bottom: .8rem;
+  }
+  .course-badges { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .badge {
+    display: inline-block; font-size: .72rem; font-weight: 500;
+    padding: .2rem .6rem; border-radius: 20px;
+  }
+  .badge-sage  { background: rgba(74,103,65,.1);  color: var(--sage); }
+  .badge-rust  { background: rgba(192,90,42,.1);  color: var(--rust); }
+  .badge-gold  { background: rgba(200,151,58,.12); color: #8a6420; }
+
+  /* ── Study plan ── */
+  .plan-list { list-style: none; }
+  .plan-item {
+    display: flex; gap: 1rem; align-items: flex-start;
+    padding: .95rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .plan-item:last-child { border-bottom: none; }
+  .plan-num {
+    flex-shrink: 0;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--ink); color: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-size: .82rem;
+    margin-top: .1rem;
+  }
+  .plan-text {
+    font-size: .93rem; color: var(--muted);
+    line-height: 1.55; padding-top: .35rem;
+  }
+  .plan-text strong { color: var(--ink); font-weight: 500; }
+
+  /* ── Timetable ── */
+  .timetable-scroll { overflow-x: auto; margin: 0 -2rem; padding: 0 2rem; }
+  .timetable {
+    width: 100%; border-collapse: collapse;
+    min-width: 540px;
+    font-size: .83rem;
+  }
+  .timetable thead tr {
+    border-bottom: 1.5px solid var(--border);
+  }
+  .timetable th {
+    text-align: left;
+    font-size: .72rem; font-weight: 500; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--label);
+    padding: .5rem .75rem .75rem;
+    white-space: nowrap;
+  }
+  .timetable th.weekend { color: var(--gold); }
+  .timetable td {
+    padding: .65rem .75rem;
+    vertical-align: top;
+    border-bottom: 1px solid rgba(214,207,194,.5);
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .timetable tbody tr:last-child td { border-bottom: none; }
+  .timetable tbody tr:hover td { background: rgba(200,151,58,.04); }
+  .tt-time { font-weight: 500; color: var(--gold); white-space: nowrap; }
+  .tt-activity { color: var(--ink); }
+  .tt-subject {
+    font-size: .72rem; color: var(--label);
+    margin-top: .15rem;
+  }
+  .tt-day-col { min-width: 78px; }
+  .tt-slot-wrap { display: flex; flex-direction: column; gap: .2rem; }
+
+  /* ── Style tip box ── */
+  .style-tip {
+    display: flex; gap: 1.1rem; align-items: flex-start;
+  }
+  .style-icon { font-size: 2rem; line-height: 1; flex-shrink: 0; margin-top: .1rem; }
+  .style-tip-body h3 {
+    font-family: 'Fraunces', serif; font-size: 1.05rem;
+    color: var(--ink); margin-bottom: .3rem;
+  }
+  .style-tip-body p {
+    font-size: .9rem; color: var(--muted); line-height: 1.6; margin-bottom: .8rem;
+  }
+  .tool-tags { display: flex; flex-wrap: wrap; gap: .45rem; }
+  .tool-tag {
+    font-size: .75rem; font-weight: 500;
+    background: rgba(200,151,58,.1); color: #7a5a1a;
+    border: 1px solid rgba(200,151,58,.25);
+    border-radius: 20px; padding: .22rem .7rem;
+  }
+
+  /* ── Progress bar ── */
+  .prog-wrap {
+    background: var(--border); border-radius: 20px;
+    height: 6px; overflow: hidden; margin-top: .5rem;
+  }
+  .prog-fill {
+    height: 100%; border-radius: 20px;
+    background: linear-gradient(90deg, var(--gold), var(--rust));
+    width: 0;
+    transition: width 1s cubic-bezier(.4,0,.2,1);
+  }
+  .prog-row {
+    display: flex; justify-content: space-between;
+    font-size: .8rem; color: var(--label); margin-bottom: .2rem;
+  }
+  .prog-row span:last-child { color: var(--ink); font-weight: 500; }
+
+  /* ── Action buttons ── */
+  .actions { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: .5rem; }
+
+  .btn-primary {
+    flex: 1; min-width: 160px;
+    padding: .85rem 1.5rem;
+    background: var(--ink); color: var(--cream);
+    border: none; border-radius: 12px;
+    font-family: 'Fraunces', serif; font-size: 1rem;
+    font-weight: 700; letter-spacing: .02em;
+    cursor: pointer; text-decoration: none;
+    text-align: center; display: inline-block;
+    transition: background .2s, transform .15s;
+  }
+  .btn-primary:hover { background: #2a2520; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-outline {
+    padding: .85rem 1.5rem;
+    background: transparent; color: var(--ink);
+    border: 1.5px solid var(--border); border-radius: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: .9rem;
+    font-weight: 500; cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: .4rem;
+    transition: border-color .2s, color .2s, transform .15s;
+  }
+  .btn-outline:hover { border-color: var(--ink); color: var(--ink); transform: translateY(-1px); }
+
+  /* ── Footer ── */
+  footer { text-align: center; margin-top: 2rem; font-size: .8rem; color: #9e958a; }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .container  { animation: fadeUp .5s ease both; }
+  .card       { animation: fadeUp .5s ease both; }
+  .card:nth-child(2) { animation-delay: .06s; }
+  .card:nth-child(3) { animation-delay: .12s; }
+  .card:nth-child(4) { animation-delay: .18s; }
+  .card:nth-child(5) { animation-delay: .24s; }
+
+  /* ── Responsive ── */
+  @media (max-width: 520px) {
+    .course-grid { grid-template-columns: 1fr 1fr; }
+    .top-nav { top: .8rem; right: .8rem; }
+    .actions { flex-direction: column; }
+    .btn-primary, .btn-outline { text-align: center; justify-content: center; }
+  }
+  @media (max-width: 360px) {
+    .course-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+{% if session.get('user_id') %}
+<div class="top-nav">
+  <span class="top-nav-user">{{ session.get('username') }}</span>
+  <a href="/progress">My Progress</a>
+  <a href="/logout">Log out</a>
+</div>
+{% endif %}
+
+<div class="container">
+
+  <!-- ── Page header ── -->
+  <div class="page-header">
+    <a href="/" class="logo"><span class="logo-dot"></span>LearnPath<span class="logo-dot"></span></a>
+    <h1>Hello, <em>{{ name }}</em>.<br>Here's your roadmap.</h1>
+    <p class="subtitle">
+      Your personalised course list, study strategy, and weekly timetable —
+      built around how you learn best.
+    </p>
+    <div class="meta-strip">
+      <span class="meta-tag">📚 <strong>{{ subject }}</strong></span>
+      <span class="meta-tag">🎯 <strong>{{ goal }}</strong></span>
+      <span class="meta-tag">🏫 <strong>{{ grade }}</strong></span>
+      <span class="meta-tag">{{ style_info.icon }} <strong>{{ style }}</strong></span>
+    </div>
+  </div>
+
+
+  <!-- ── Card 1: Learning style ── -->
+  <div class="card">
+    <div class="section-label">Your learning style</div>
+    <div class="style-tip">
+      <div class="style-icon">{{ style_info.icon }}</div>
+      <div class="style-tip-body">
+        <h3>{{ style }} Learner</h3>
+        <p>{{ style_info.tip }}</p>
+        <div class="tool-tags">
+          {% for tool in style_info.tools %}
+          <span class="tool-tag">{{ tool }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ── Card 2: Recommended courses ── -->
+  <div class="card">
+    <div class="section-label">Recommended courses</div>
+    <div class="course-grid">
+      {% for course in courses %}
+      <div class="course-item">
+        <div class="course-num">Course {{ loop.index }}</div>
+        <div class="course-title">{{ course.title }}</div>
+        <div class="course-badges">
+          <span class="badge badge-sage">{{ course.level }}</span>
+          <span class="badge badge-gold">⏱ {{ course.duration }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+
+  <!-- ── Card 3: 6-week study plan ── -->
+  <div class="card">
+    <div class="section-label">Your 6-week study plan</div>
+
+    <!-- Progress bar -->
+    <div style="margin-bottom: 1.6rem;">
+      <div class="prog-row">
+        <span>Overall plan progress</span>
+        <span>0% complete</span>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-fill" id="prog-bar" data-width="0%"></div>
+      </div>
+    </div>
+
+    <ul class="plan-list">
+      {% for week in weekly_plan %}
+      <li class="plan-item">
+        <div class="plan-num">{{ loop.index }}</div>
+        <div class="plan-text">
+          {# Split off "Week N – " prefix to bold it #}
+          {% set parts = week.split(' – ', 1) %}
+          {% if parts|length == 2 %}
+            <strong>{{ parts[0] }}</strong> — {{ parts[1] }}
+          {% else %}
+            {{ week }}
+          {% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+
+  <!-- ── Card 4: Weekly timetable ── -->
+  <div class="card">
+    <div class="section-label">Weekly timetable</div>
+    <div class="timetable-scroll">
+      <table class="timetable">
+        <thead>
+          <tr>
+            {% set weekdays  = ['Monday','Tuesday','Wednesday','Thursday','Friday'] %}
+            {% set weekend   = ['Saturday','Sunday'] %}
+            {% set all_days  = weekdays + weekend %}
+            {% for day in all_days %}
+            <th class="tt-day-col {% if day in weekend %}weekend{% endif %}">{{ day[:3] }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {# Build columns: collect slots per day then render row by row #}
+          {% set ns = namespace(max_rows=0) %}
+          {% for day in all_days %}
+            {% set cnt = namespace(c=0) %}
+            {% for slot in timetable if slot.day == day %}{% set cnt.c = cnt.c + 1 %}{% endfor %}
+            {% if cnt.c > ns.max_rows %}{% set ns.max_rows = cnt.c %}{% endif %}
+          {% endfor %}
+
+          {% for row_i in range(ns.max_rows) %}
+          <tr>
+            {% for day in all_days %}
+              {% set day_slots = [] %}
+              {% for slot in timetable if slot.day == day %}
+                {% set _ = day_slots.append(slot) %}
+              {% endfor %}
+              <td>
+                {% if row_i < day_slots|length %}
+                  {% set s = day_slots[row_i] %}
+                  <div class="tt-slot-wrap">
+                    <div class="tt-time">
+                      {{ s.time if s.time is defined else s.time_slot }}
+                    </div>
+                    <div class="tt-activity">{{ s.activity }}</div>
+                    {% if s.subject and s.subject != 'General' %}
+                    <div class="tt-subject">{{ s.subject }}</div>
+                    {% endif %}
+                  </div>
+                {% endif %}
+              </td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ── Card 5: Actions ── -->
+  <div class="card">
+    <div class="section-label">What's next?</div>
+    <p style="font-size:.92rem; color:var(--muted); line-height:1.6; margin-bottom:1.5rem;">
+      Start logging your study sessions to track progress, or print this plan to keep it handy.
+    </p>
+    <div class="actions">
+      <a href="/progress" class="btn-primary">Track My Progress →</a>
+      <a href="/"         class="btn-outline">← Edit my plan</a>
+      <button onclick="window.print()" class="btn-outline">🖨 Print</button>
+    </div>
+  </div>
+
+
+  <footer>Powered by LearnPath AI · <a href="/" style="color:inherit;">Start over</a></footer>
+</div>
+
+<script>
+  // Animate progress bar on load
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.prog-fill[data-width]').forEach(function (el) {
+      var w = el.dataset.width;
+      setTimeout(function () { el.style.width = w; }, 120);
+    });
+  });
+</script>
+
+</body>
+</html>
